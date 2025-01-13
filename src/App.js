@@ -1,43 +1,37 @@
-// Importy React i Bootstrap
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-function App() {
-  // Stany dla formularza
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-
-  // Obsługa przycisku "Dodaj"
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Zapobiega przeładowaniu strony
-    console.log(`tytul: ${title}; rodzaj: ${category}`);
+ 
+const Formularz = () => {
+  // Stany dla pól formularza
+  const [tytul, setTytul] = useState('');
+  const [rodzaj, setRodzaj] = useState('');
+ 
+  // Obsługa kliknięcia przycisku "Dodaj"
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Zapobiega odświeżeniu strony
+    console.log({ tytul, rodzaj });
   };
-
+ 
   return (
     <div className="container" style={{ padding: '20px' }}>
-      <h1>Formularz</h1>
       <form onSubmit={handleSubmit}>
-        {/* Pole tekstowe */}
         <div className="mb-3">
-          <label htmlFor="title" className="form-label">Tytuł filmu</label>
+          <label htmlFor="tytul" className="form-label">Tytuł filmu</label>
           <input
             type="text"
+            id="tytul"
             className="form-control"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Wpisz tytuł filmu"
+            value={tytul}
+            onChange={(e) => setTytul(e.target.value)}
           />
         </div>
-
-        {/* Lista rozwijana */}
         <div className="mb-3">
-          <label htmlFor="category" className="form-label">Rodzaj</label>
+          <label htmlFor="rodzaj" className="form-label">Rodzaj</label>
           <select
+            id="rodzaj"
             className="form-select"
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={rodzaj}
+            onChange={(e) => setRodzaj(e.target.value)}
           >
             <option value="">Wybierz...</option>
             <option value="1">Komedia</option>
@@ -46,12 +40,10 @@ function App() {
             <option value="4">Horror</option>
           </select>
         </div>
-
-        {/* Przycisk Dodaj */}
         <button type="submit" className="btn btn-primary">Dodaj</button>
       </form>
     </div>
   );
-}
-
-export default App;
+};
+ 
+export default Formularz;
