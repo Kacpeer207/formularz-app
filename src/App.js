@@ -1,58 +1,49 @@
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  const [nazwa, setNazwa] = useState('');
+  const [tytul, setTytul] = useState('');
   const [rodzaj, setRodzaj] = useState('');
-  const [dataProdukcji, setDataProdukcji] = useState('');
-  const [message, setMessage] = useState('');
+  const [wiadomosc, setWiadomosc] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!nazwa || !rodzaj || !dataProdukcji) {
-      setMessage('Wszystkie pola są wymagane!');
-      return;
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
       const response = await fetch('http://localhost:5000/filmy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nazwa, rodzaj, dataProdukcji }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nazwa: tytul,
+          rodzaj,
+          dataProdukcji: new Date().toISOString().split('T')[0], // Ustawienie obecnej daty
+        }),
       });
 
-      const data = await response.json();
-
-      if (data.error) {
-        setMessage(data.error);
+      if (response.ok) {
+        setWiadomosc('Film został dodany pomyślnie!');
       } else {
-        setMessage('Film dodany pomyślnie!');
-        setNazwa('');
-        setRodzaj('');
-        setDataProdukcji('');
+        setWiadomosc('Wystąpił błąd podczas dodawania filmu.');
       }
     } catch (error) {
-      setMessage('Wystąpił błąd podczas dodawania filmu.');
+      console.error('Błąd połączenia z serwerem:', error);
+      setWiadomosc('Nie udało się połączyć z serwerem.');
     }
   };
 
   return (
     <div className="container" style={{ padding: '20px' }}>
-      <h1>Dodaj Film</h1>
-      {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
-        <label htmlFor="nazwa" className="form-label">Tytuł filmu</label>
+        <label htmlFor="tytul" className="form-label">Tytuł filmu</label>
         <input
           type="text"
-          id="nazwa"
+          id="tytul"
           className="form-control"
-          value={nazwa}
-          onChange={(e) => setNazwa(e.target.value)}
+          value={tytul}
+          onChange={(e) => setTytul(e.target.value)}
         />
 
-        <label htmlFor="rodzaj" className="form-label" style={{ marginTop: '10px' }}>Rodzaj</label>
+        <label htmlFor="rodzaj" className="form-label">Rodzaj</label>
         <select
           id="rodzaj"
           className="form-select"
@@ -66,17 +57,10 @@ const App = () => {
           <option value="Horror">Horror</option>
         </select>
 
-        <label htmlFor="dataProdukcji" className="form-label" style={{ marginTop: '10px' }}>Data Produkcji</label>
-        <input
-          type="date"
-          id="dataProdukcji"
-          className="form-control"
-          value={dataProdukcji}
-          onChange={(e) => setDataProdukcji(e.target.value)}
-        />
-
-        <button type="submit" className="btn btn-primary" style={{ marginTop: '15px' }}>Dodaj</button>
+        <button type="submit" className="btn btn-primary mt-3">Dodaj</button>
       </form>
+
+      {wiadomosc && <p className="mt-3">{wiadomosc}</p>}
     </div>
   );
 };
