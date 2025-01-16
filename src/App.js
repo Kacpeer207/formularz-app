@@ -1,68 +1,116 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// Najpierw tworzymy aplikację frontendową w React
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const App = () => {
-  const [tytul, setTytul] = useState('');
-  const [rodzaj, setRodzaj] = useState('');
-  const [wiadomosc, setWiadomosc] = useState('');
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+function FilmManager() {
+  const [films, setFilms] = useState([]);
+  const [formData, setFormData] = useState({
+    id: '',
+    tytul: '',
+    rezyser: '',
+    rok: '',
+  });
 
+  useEffect(() => {
+    fetchFilms();
+  }, []);
+
+  const fetchFilms = async () => {
     try {
-      const response = await fetch('http://localhost:5000/filmy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nazwa: tytul,
-          rodzaj,
-          dataProdukcji: new Date().toISOString().split('T')[0], // Ustawienie obecnej daty
-        }),
-      });
-
-      if (response.ok) {
-        setWiadomosc('Film został dodany pomyślnie!');
-      } else {
-        setWiadomosc('Wystąpił błąd podczas dodawania filmu.');
-      }
+      const response = await axios.get('http://localhost:5000/filmy');
+      setFilms(response.data);
     } catch (error) {
-      console.error('Błąd połączenia z serwerem:', error);
-      setWiadomosc('Nie udało się połączyć z serwerem.');
+      console.error('Błąd podczas pobierania danych:', error);
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (formData.id) {
+        // Aktualizacja filmu
+        await axios.put(`http://localhost:5000/filmy/${formData.id}`, formData);
+      } else {
+        // Dodawanie nowego filmu
+        await axios.post('http://localhost:5000/filmy', formData);
+      }
+      fetchFilms();
+      setFormData({ id: '', tytul: '', rezyser: '', rok: '' });
+    } catch (error) {
+      console.error('Błąd podczas zapisu:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/filmy/${id}`);
+      fetchFilms();
+    } catch (error) {
+      console.error('Błąd podczas usuwania:', error);
+    }
+  };
+
+  const handleEdit = (film) => {
+    setFormData(film);
+  };
+
   return (
-    <div className="container" style={{ padding: '20px' }}>
+    <div>
+      <h1>Zarządzanie Filmami</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="tytul" className="form-label">Tytuł filmu</label>
         <input
           type="text"
-          id="tytul"
-          className="form-control"
-          value={tytul}
-          onChange={(e) => setTytul(e.target.value)}
+          placeholder="Tytuł"
+          value={formData.tytul}
+          onChange={(e) => setFormData({ ...formData, tytul: e.target.value })}
+          required
         />
-
-        <label htmlFor="rodzaj" className="form-label">Rodzaj</label>
-        <select
-          id="rodzaj"
-          className="form-select"
-          value={rodzaj}
-          onChange={(e) => setRodzaj(e.target.value)}
-        >
-          <option value="">Wybierz...</option>
-          <option value="Komedia">Komedia</option>
-          <option value="Obyczajowy">Obyczajowy</option>
-          <option value="Sensacyjny">Sensacyjny</option>
-          <option value="Horror">Horror</option>
-        </select>
-
-        <button type="submit" className="btn btn-primary mt-3">Dodaj</button>
+        <input
+          type="text"
+          placeholder="Reżyser"
+          value={formData.rezyser}
+          onChange={(e) => setFormData({ ...formData, rezyser: e.target.value })}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Rok"
+          value={formData.rok}
+          onChange={(e) => setFormData({ ...formData, rok: e.target.value })}
+          required
+        />
+        <button type="submit">{formData.id ? 'Edytuj' : 'Dodaj'}</button>
       </form>
 
-      {wiadomosc && <p className="mt-3">{wiadomosc}</p>}
+      <h2>Lista Filmów</h2>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tytuł</th>
+            <th>Reżyser</th>
+            <th>Rok</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          {films.map((film) => (
+            <tr key={film.id}>
+              <td>{film.id}</td>
+              <td>{film.tytul}</td>
+              <td>{film.rezyser}</td>
+              <td>{film.rok}</td>
+              <td>
+                <button onClick={() => handleEdit(film)}>Edytuj</button>
+                <button onClick={() => handleDelete(film.id)}>Usuń</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
-export default App;
+export default FilmManager;

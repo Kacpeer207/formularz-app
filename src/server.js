@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -6,7 +7,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Połączenie z bazą danych
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -15,30 +15,46 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-  if (err) {
-    console.error('Błąd połączenia z bazą danych:', err);
-    return;
-  }
+  if (err) throw err;
   console.log('Połączono z bazą danych MySQL');
 });
 
-// Endpoint do dodawania filmów
-app.post('/filmy', (req, res) => {
-  const { nazwa, rodzaj, dataProdukcji } = req.body;
-
-  const query = 'INSERT INTO filmy (nazwa, rodzaj, data_produkcji) VALUES (?, ?, ?)';
-  db.query(query, [nazwa, rodzaj, dataProdukcji], (err, result) => {
-    if (err) {
-      console.error('Błąd podczas dodawania filmu:', err);
-      res.status(500).send('Błąd serwera');
-      return;
-    }
-    res.status(200).json({ message: 'Film dodany pomyślnie!', id: result.insertId });
+// Pobieranie wszystkich filmów
+app.get('/filmy', (req, res) => {
+  db.query('SELECT * FROM filmy', (err, results) => {
+    if (err) throw err;
+    res.json(results);
   });
 });
 
-// Uruchomienie serwera
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Serwer działa na http://localhost:${PORT}`);
+// Dodawanie filmu
+app.post('/filmy', (req, res) => {
+  const { tytul, rezyser, rok } = req.body;
+  db.query('INSERT INTO filmy (tytul, rezyser, rok) VALUES (?, ?, ?)', [tytul, rezyser, rok], (err, results) => {
+    if (err) throw err;
+    res.json({ id: results.insertId, tytul, rezyser, rok });
+  });
+});
+
+// Aktualizacja filmu
+app.put('/filmy/:id', (req, res) => {
+  const { id } = req.params;
+  const { tytul, rezyser, rok } = req.body;
+  db.query('UPDATE filmy SET tytul = ?, rezyser = ?, rok = ? WHERE id = ?', [tytul, rezyser, rok, id], (err) => {
+    if (err) throw err;
+    res.json({ id, tytul, rezyser, rok });
+  });
+});
+
+// Usuwanie filmu
+app.delete('/filmy/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM filmy WHERE id = ?', [id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Film został usunięty' });
+  });
+});
+
+app.listen(5000, () => {
+  console.log('Serwer działa na porcie 5000');
 });
