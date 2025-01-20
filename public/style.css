@@ -90,7 +90,7 @@ table {
 table th, table td {
   text-align: left;
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #646464;
 }
 
 table th {
@@ -121,26 +121,26 @@ table button {
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  margin: 10px;
 }
 
 table .edit-btn {
-  background-color: #ffc107;
+  background-color: #00e222;
   color: #fff;
-  margin: 100px;
 }
 
 table .edit-btn:hover {
-  background-color: #e0a800;
+  background-color: #64ff85;
 }
 
 table .delete-btn {
-  background-color: #dc3545;
+  background-color: #97000f;
   color: #fff;
   margin: 10px;
 }
 
 table .delete-btn:hover {
-  background-color: #c82333;
+  background-color: #ff4154;
 }
 
 /* Stopka */
