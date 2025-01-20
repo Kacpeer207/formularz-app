@@ -59,7 +59,7 @@ function FilmManager() {
 
   return (
     <div className="container">
-      <h1>Zarządzanie Filmami</h1>
+      <h1>ZARZĄDZANIE FILMAMI</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <input
