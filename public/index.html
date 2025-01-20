@@ -4,18 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zarządzanie Filmami</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-rbsA2VBKQvL3oIHnwCcfV2QHs35J2E27KDFw5tvxoxC4MT+8j5jlpEN6JoH6Bf26"
-    crossorigin="anonymous"
-  >
   <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="root"></div>
-  <!-- React Scripts -->
-  <script type="module" src="/index.js"></script>
+  <header>
+    <h1><i class="fas fa-film"></i> Zarządzanie Filmami</h1>
+  </header>
+  
+  <main>
+    <!-- Sekcja formularza -->
+    <section class="form-section">
+      <h2>Dodaj Nowy Film</h2>
+      <form id="film-form">
+        <input type="text" id="title" placeholder="Tytuł filmu" required>
+        <input type="text" id="director" placeholder="Reżyser" required>
+        <input type="number" id="year" placeholder="Rok produkcji" required>
+        <button type="submit" id="add-film-btn">Dodaj Film</button>
+      </form>
+    </section>
+    
+    <!-- Tabela filmów -->
+    <section class="table-section">
+      <h2>Lista Filmów</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tytuł</th>
+            <th>Reżyser</th>
+            <th>Rok</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody id="film-list">
+          <!-- Wiersze generowane dynamicznie -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+  
+  <footer>
+    <p>© 2025 Zarządzanie Filmami | Stworzone z <i class="fas fa-heart"></i> przez <i>Kacpra Słomińskiego</i>.</p>
+  </footer>
+  <script src="app.js"></script>
 </body>
 </html>

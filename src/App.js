@@ -1,127 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+const form = document.getElementById('film-form');
+const filmList = document.getElementById('film-list');
 
-function FilmManager() {
-  const [films, setFilms] = useState([]);
-  const [formData, setFormData] = useState({
-    id: '',
-    tytul: '',
-    rezyser: '',
-    rok: '',
-  });
+// Obsługa dodawania filmów
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  // Funkcja pobierania danych o filmach
-  const fetchFilms = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/filmy');
-      setFilms(response.data);
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych:', error);
-    }
-  };
+  const title = document.getElementById('title').value;
+  const director = document.getElementById('director').value;
+  const year = document.getElementById('year').value;
 
-  // Funkcja obsługująca formularz
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (formData.id) {
-        // Aktualizacja filmu
-        await axios.put(`http://localhost:5000/filmy/${formData.id}`, formData);
-      } else {
-        // Dodawanie nowego filmu
-        await axios.post('http://localhost:5000/filmy', formData);
-      }
-      fetchFilms();
-      setFormData({ id: '', tytul: '', rezyser: '', rok: '' }); // resetowanie formularza
-    } catch (error) {
-      console.error('Błąd podczas zapisu:', error);
-    }
-  };
+  if (!title || !director || !year) {
+    alert('Wszystkie pola muszą być wypełnione!');
+    return;
+  }
 
-  // Funkcja do usuwania filmu
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/filmy/${id}`);
-      fetchFilms();
-    } catch (error) {
-      console.error('Błąd podczas usuwania:', error);
-    }
-  };
+  const id = filmList.children.length + 1;
 
-  // Funkcja do edytowania filmu
-  const handleEdit = (film) => {
-    setFormData(film);
-  };
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${id}</td>
+    <td>${title}</td>
+    <td>${director}</td>
+    <td>${year}</td>
+    <td>
+      <button class="edit-btn"><i class="fas fa-edit"></i> Edytuj</button>
+      <button class="delete-btn"><i class="fas fa-trash"></i> Usuń</button>
+    </td>
+  `;
 
-  useEffect(() => {
-    fetchFilms(); // Ładowanie filmów po załadowaniu komponentu
-  }, []);
+  filmList.appendChild(row);
+  form.reset();
+});
 
-  return (
-    <div className="container">
-      <h1>ZARZĄDZANIE FILMAMI</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Tytuł"
-            value={formData.tytul}
-            onChange={(e) => setFormData({ ...formData, tytul: e.target.value })}
-            required
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Reżyser"
-            value={formData.rezyser}
-            onChange={(e) => setFormData({ ...formData, rezyser: e.target.value })}
-            required
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="number"
-            placeholder="Rok"
-            value={formData.rok}
-            onChange={(e) => setFormData({ ...formData, rok: e.target.value })}
-            required
-            className="form-control"
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">{formData.id ? 'Edytuj' : 'Dodaj'}</button>
-      </form>
-
-      <h2 className="mt-5">Lista Filmów</h2>
-      <table className="table table-bordered mt-4">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tytuł</th>
-            <th>Reżyser</th>
-            <th>Rok</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          {films.map((film) => (
-            <tr key={film.id}>
-              <td>{film.id}</td>
-              <td>{film.tytul}</td>
-              <td>{film.rezyser}</td>
-              <td>{film.rok}</td>
-              <td>
-                <button className="btn btn-warning" onClick={() => handleEdit(film)}>Edytuj</button>
-                <button className="btn btn-danger" onClick={() => handleDelete(film.id)}>Usuń</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-export default FilmManager;
+// Obsługa usuwania filmów
+filmList.addEventListener('click', (e) => {
+  if (e.target.classList.contains('delete-btn')) {
+    const row = e.target.closest('tr');
+    row.remove();
+  }
+});
