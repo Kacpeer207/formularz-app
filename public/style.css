@@ -125,22 +125,22 @@ table button {
 }
 
 table .edit-btn {
-  background-color: #00e222;
+  background-color: #ffc107;
   color: #fff;
 }
 
 table .edit-btn:hover {
-  background-color: #64ff85;
+  background-color: #e0a800;
 }
 
 table .delete-btn {
-  background-color: #97000f;
+  background-color: #dc3545;
   color: #fff;
   margin: 10px;
 }
 
 table .delete-btn:hover {
-  background-color: #ff4154;
+  background-color: #c82333;
 }
 
 /* Stopka */
